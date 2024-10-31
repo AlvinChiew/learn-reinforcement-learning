@@ -25,26 +25,24 @@ class CustomEnv(Env):
     def __init__(self):
 
         self._ws = None
-        self._loop = asyncio.get_event_loop()
-        self._loop.run_until_complete(self._connect_ws())
 
         self.action_space = Discrete(3)
         self.observation_space = Box(0, 100, shape=(1,), dtype=int)
         self._obs = np.array([0])
         self._info = {}
 
+        asyncio.run(self._connect_ws())
+
     def reset(self, seed=None):
         super().reset(seed=seed)
 
-        response = self._loop.run_until_complete(self._post_ws({"process": "reset"}))
+        response = asyncio.run(self._post_ws({"process": "reset"}))
         self._obs = np.array(response["obs"])
 
         return self._obs, self._info
 
     def step(self, action):
-        response = self._loop.run_until_complete(
-            self._post_ws({"process": "step", "action": action})
-        )
+        response = asyncio.run(self._post_ws({"action": action}))
 
         self._obs = np.array(response["obs"])
         reward = response["reward"]
@@ -53,9 +51,7 @@ class CustomEnv(Env):
         return self._obs, reward, done, False, self._info
 
     def close(self):
-        if self._ws:
-            self._loop.run_until_complete(self._ws.close())
-        self._loop.close()
+        asyncio.run(self._ws.close())
 
     def render(self):
         pass
