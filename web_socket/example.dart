@@ -3,7 +3,7 @@ import 'dart:io';
 
 void main() async {
   final server = await HttpServer.bind('127.0.0.1', 8001);
-  print('WebSocket server is running on ws://127.0.0.1:8081');
+  print('WebSocket server is running on ws://127.0.0.1:8001');
 
   await for (HttpRequest request in server) {
     if (request.uri.path == '/ws') {

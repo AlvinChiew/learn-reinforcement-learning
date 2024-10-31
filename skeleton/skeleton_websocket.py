@@ -14,10 +14,12 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 
 class CustomEnv(Env):
+    metadata = {"game_uri": "ws://localhost:8080"}
+
     def __init__(self):
 
-        self.ws = websocket.WebSocket()
-        self.ws.connect("ws://localhost:8001")
+        self._ws = websocket.WebSocket()
+        self._ws.connect(self.metadata["game_uri"])
 
         self.action_space = Discrete(3)
         self.observation_space = Box(0, 100, shape=(1,), dtype=int)
@@ -27,15 +29,15 @@ class CustomEnv(Env):
     def reset(self, seed=None):
         super().reset(seed=seed)
 
-        self.ws.send(json.dumps({"process": "reset"}))
-        response = json.loads(self.ws.recv())
+        self._ws.send(json.dumps({"process": "reset"}))
+        response = json.loads(self._ws.recv())
         self._obs = response["state"]
 
         return self._obs, self._info
 
     def step(self, action):
-        self.ws.send(json.dumps({"process": "step", "action": action}))
-        response = json.loads(self.ws.recv())
+        self._ws.send(json.dumps({"process": "step", "action": action}))
+        response = json.loads(self._ws.recv())
 
         self._obs = response["obs"]
         reward = response["reward"]
