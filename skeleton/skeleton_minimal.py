@@ -10,7 +10,7 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.evaluation import evaluate_policy
 
 
-class LogicChessTrackGameEnv(Env):
+class CustomEnv(Env):
     def __init__(self):
         self.action_space = Discrete(3)
         self.observation_space = Box(0, 100, shape=(1,), dtype=int)
@@ -32,7 +32,7 @@ class LogicChessTrackGameEnv(Env):
 
 
 if __name__ == "__main__":
-    env = LogicChessTrackGameEnv()
+    env = CustomEnv()
     check_env(env, warn=True)
 
     model = PPO("MlpPolicy", env, verbose=1)
