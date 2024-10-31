@@ -1,5 +1,5 @@
 from stable_baselines3 import PPO
-from rl_game_server import GameEnv
+from rl_env import GameEnv
 
 # Initialize the environment and the model
 env = GameEnv()
